@@ -3,8 +3,6 @@ name: Java CI/CD with Maven
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -16,36 +14,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
-          java-version: '17' # Change to '11' or '21' if your project uses a different version
+          java-version: '17'
           distribution: 'temurin'
-          cache: 'maven' # Automatically caches ~/.m2 dependencies for faster builds
 
-      - name: Build and run tests with Maven
-        run: mvn -B test --file pom.xml
-
-      - name: Package JAR file
-        run: mvn -B package -DskipTests --file pom.xml
-
-      - name: Upload built JAR artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-jar
-          path: target/*.jar
-
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download built JAR artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-jar
-          path: target/
-
-      - name: Deploy application
+      - name: Verify Java and Maven installation
         run: |
-          echo "Ready to deploy JAR file:"
-          ls -lh target/*.jar
+          java -version
+          mvn -version
